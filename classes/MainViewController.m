@@ -19,10 +19,6 @@
 @property (nonatomic, strong) IBOutlet UITextField *keyTextField; // textfield to type the key
 @property (nonatomic, strong) IBOutlet UIView *keyView; // Container View
 
-
-#pragma mark Properties: Segmented Views
-@property (nonatomic, strong) IBOutlet UISegmentedControl *segmentedControl; // Segmented control in view controller 1
-
 @property (strong, nonatomic) IBOutlet UILabel *statusLabel; // Label to confirm message copied or not
 
 #pragma mark Properties: Buttons
@@ -83,6 +79,8 @@ BOOL didDecrypt = NO;
 
 BOOL keysMatched = NO;
 
+BOOL isInKeyViewController = NO;
+
 #pragma mark - <<<< View Methods >>>>
 
 - (void) viewDidDisappear:(BOOL)animated {
@@ -95,6 +93,7 @@ BOOL keysMatched = NO;
 
 - (void) viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
     
     if (_mainTextView.text.length == 0) {
         
@@ -109,9 +108,20 @@ BOOL keysMatched = NO;
     }
 }
 
+- (void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if (password.length == 0 && !isInKeyViewController) {
+        isInKeyViewController = YES;
+        [self performSegueWithIdentifier:@"toKey" sender:self];
+    }
+}
+
 - (void)viewDidLoad {
     
     [super viewDidLoad];
+    
+    
     _slideView.backgroundColor = [UIColor lightGrayColor];
     _slideView.alpha = .95;
     _slideViewInner.backgroundColor = [UIColor whiteColor];
@@ -124,8 +134,6 @@ BOOL keysMatched = NO;
     height = self.view.frame.size.height;
     width = self.view.frame.size.width;
     
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.png"]];
-    
     NSUserDefaults *savedData = [NSUserDefaults new];
     
     password = [savedData stringForKey:@"password"];
@@ -135,6 +143,8 @@ BOOL keysMatched = NO;
     if (!openedBefore) {
         [self sliderUp];
     }
+    
+    [[self navigationController] setNavigationBarHidden:YES];
     
     _adView.delegate = self;
     
@@ -161,7 +171,7 @@ BOOL keysMatched = NO;
     _doneEditingButton.layer.cornerRadius = 10;
     
     self.statusLabel.alpha = 0.0;
-    
+        
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
                                                     initWithTarget:self
                                                     action:@selector(handleTap:)];
@@ -190,11 +200,6 @@ BOOL keysMatched = NO;
         [_mainTextView setFont:[UIFont systemFontOfSize:15]];
     else if (IS_IPAD)
         [_mainTextView setFont:[UIFont systemFontOfSize:25]];
-    
-    // Segmented control
-    [_segmentedControl addTarget:self
-                          action:@selector(pickOne:)
-                forControlEvents:UIControlEventValueChanged];
     
     // Action sheet to send the encrypted message
     _popup = [[UIActionSheet alloc] initWithTitle:nil delegate:self
@@ -232,10 +237,12 @@ BOOL keysMatched = NO;
         [self textViewUp:_mainTextView willMoveUp:NO];
     }
     
-    // dismisses current view controller
-    [self dismissViewControllerAnimated:YES completion:nil];
-    
     [super viewWillDisappear:animated];
+}
+
+// hide status bar
+- (BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 # pragma mark - Info Button/Slider methods
@@ -394,6 +401,10 @@ BOOL keysMatched = NO;
 }
 
 #pragma mark - Key&Lock Mechanism
+- (IBAction)keyPressed:(UIButton *)sender {
+    isInKeyViewController = YES;
+    [self performSegueWithIdentifier:@"toKey" sender:self];
+}
 
 - (void) swipeLabelAnimator {
     
@@ -430,10 +441,10 @@ BOOL keysMatched = NO;
     float firstY = [[sender view] center].y; // Y-Coordinate of the center of the key
     
     // if movement ends and key is not at either proximities, return the key sliding back
-    if ([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded && [sender locationInView: _key.superview].x < width*(150.0/320) && [sender locationInView: _key.superview].x > width*(23.0/320)) {
+    if ([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateEnded && [sender locationInView: _key.superview].x < width*(244.0f/320) && [sender locationInView: _key.superview].x > width*(42.0f/320)) {
         
         [UIView animateWithDuration:.5 animations:^(void){
-            [_key setCenter:CGPointMake(width*(23.0/320), firstY)]; // returns key back
+            [_key setCenter:CGPointMake(width*(42.0f/320), firstY)]; // returns key back
         } completion:^(BOOL finished) {
             [UIView animateWithDuration:.7 animations:^(void){
                 _swipeLabel.hidden = NO;
@@ -446,12 +457,12 @@ BOOL keysMatched = NO;
     if ([(UIPanGestureRecognizer*)sender state] == UIGestureRecognizerStateChanged) {
         
         // if key reaches the lock
-        if ([sender locationInView: _key.superview].x >= width*(150.0/320)) {
+        if ([sender locationInView: _key.superview].x >= width*(244.0f/320)) {
             
             // hide key and lock then return key to its original place
             _Lock.hidden = YES;
             _key.hidden = YES;
-            [_key setCenter:CGPointMake(width*(23.0/320), firstY)];
+            [_key setCenter:CGPointMake(width*(42.0f/320), firstY)];
             
             _Lock.alpha = 0;
             _key.alpha = 0;
@@ -459,8 +470,8 @@ BOOL keysMatched = NO;
             [self enterkey]; // brings in the key textfield to enter/change key
             
             // keep key in place if user tries to slide it left of origin
-        } else if ([sender locationInView: _key.superview].x <= width*(23.0/320)) {
-            [_key setCenter:CGPointMake(width*(23.0/320), firstY)];
+        } else if ([sender locationInView: _key.superview].x <= width*(42.0f/320)) {
+            [_key setCenter:CGPointMake(width*(42.0f/320), firstY)];
             
             [UIView animateWithDuration:.7 animations:^(void){
                 _swipeLabel.hidden = NO;
@@ -523,7 +534,11 @@ BOOL keysMatched = NO;
         _keyView.frame = keyViewFrame;
         
     }completion:^(BOOL finished){
-        
+        if (password.length != 0) {
+            isInKeyViewController = NO;
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+        }
     }];
     
 }
@@ -647,19 +662,9 @@ BOOL keysMatched = NO;
 
 #pragma mark - UI Buttons
 
-//Action method executes when user touches the button of segmentedControl
--(void) pickOne:(id)sender{
-    UISegmentedControl *segmentedControl = (UISegmentedControl *)sender;
-    
-    NSString *segmentTitle = [segmentedControl titleForSegmentAtIndex: [_segmentedControl selectedSegmentIndex]];
-    
-    if ([segmentTitle isEqualToString:@"Decrypt"]) {
-        [self performSegueWithIdentifier:@"decrypt" sender:self];
-    }
-    
-    else if ([segmentTitle isEqualToString:@"Encrypt"]) {
-        [self performSegueWithIdentifier:@"encrypt" sender:self];
-    }
+- (IBAction)back:(UIBarButtonItem *)sender {
+    isInKeyViewController = YES;
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 // Displays the UIActionSheet containing the send options

@@ -46,3 +46,5 @@ extern BOOL keyboardIsUp;
 extern BOOL didDecrypt;
 
 extern BOOL keysMatched;
+
+extern BOOL isInKeyViewController;
