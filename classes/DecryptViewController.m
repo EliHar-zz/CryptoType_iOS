@@ -37,7 +37,7 @@
 @property (nonatomic, strong) IBOutlet UIButton *infoButton;// Image of the button explained
 @property (nonatomic, strong) IBOutlet UIView *slideView; // outer view that slides up and down
 @property (nonatomic, strong) IBOutlet UIView *slideViewInner; // inner view that contains the elements that chnage
-@property (nonatomic, strong) IBOutlet UIImageView *message; // Message for the user to read
+@property (nonatomic, strong) IBOutlet UILabel *instruction; // Message for the user to read
 @property (nonatomic, strong) IBOutlet UIImageView *button;// Image of the button explained
 @property (nonatomic, strong) IBOutlet UILabel *sliderStatus;// Image of the button explained
 
@@ -90,7 +90,7 @@
         }
     } else {
         _senderKeyTextField.secureTextEntry = NO;
-        _senderKeyTextField.text = @"ex. pizza";
+        _senderKeyTextField.text = @"ex. admin";
         _keyLabel.text = @"Enter Key";
         [_Lock setBackgroundImage:[UIImage imageNamed:@"unlocked.png"] forState:UIControlStateNormal];
         [_key setBackgroundImage:[UIImage imageNamed:@"key.png"]
@@ -118,6 +118,12 @@
     
     _doneEditingButton.alpha = 0;
     _doneEditingButton.hidden = YES;
+    
+    if ([[UIScreen mainScreen] bounds].size.height != 568.0f) {
+        CGRect newframe = _doneEditingButton.frame;
+        newframe.origin.y -= 88.0f;
+        _doneEditingButton.frame = newframe;
+    }
     
     height = self.view.frame.size.height;
     width = self.view.frame.size.width;
@@ -170,7 +176,7 @@
         _beforeTextView.selectable = YES;
         _beforeTextView.dataDetectorTypes = UIDataDetectorTypeNone;
         
-        [_decryptButton setBackgroundImage:[UIImage imageNamed:@"decrypt.png"] forState:UIControlStateNormal];
+        [_decryptButton setBackgroundImage:[UIImage imageNamed:@"button_decrypt.png"] forState:UIControlStateNormal];
     } else {
         _beforeTextView.text = afterText;
         
@@ -178,7 +184,7 @@
         _beforeTextView.selectable = YES;
         _beforeTextView.dataDetectorTypes = UIDataDetectorTypeAll;
         
-        [_decryptButton setBackgroundImage:[UIImage imageNamed:@"copy.png"] forState:UIControlStateNormal];
+        [_decryptButton setBackgroundImage:[UIImage imageNamed:@"button_copy.png"] forState:UIControlStateNormal];
         
     }
     
@@ -229,8 +235,7 @@
     }];
     sliderTapCounter = 1;
     _sliderStatus.text = @"Tap for Next >>>";
-    _message.image = [UIImage imageNamed:@"copyMSG.png"];
-    _button.image = [UIImage imageNamed:@"copy.png"];
+    _button.image = [UIImage imageNamed:@"main.png"];
     [self sliderUp];
 }
 
@@ -247,7 +252,7 @@
         newSlideViewFrame.origin.y = (77.0/568)*height;
         _slideView.frame = newSlideViewFrame;
         
-        _slideView.alpha = .90;
+        _slideView.alpha = .99;
         
     }completion:^(BOOL finished) {
         slideView_center_Y = _slideView.center.y; // original center
@@ -287,42 +292,127 @@
     
     switch (sliderTapCounter) {
         case 1:{
+            CGRect labelFrame = _instruction.frame;
+            labelFrame.origin.y -= 75.0f;
+            _instruction.frame = labelFrame;
+            
             _sliderStatus.text = @"Tap for Next >>>";
-            _message.image = [UIImage imageNamed:@"copyMSG.png"];
-            _button.image = [UIImage imageNamed:@"copy.png"];
+            _button.image = [UIImage imageNamed:@"main.png"];
+            _instruction.text = @"";
+            
         }
             break;
         case 2:{
-            _message.image = [UIImage imageNamed:@"sendMSG.png"];
-            _button.image = [UIImage imageNamed:@"send.png"];
+            _button.image = [UIImage imageNamed:@"corner_lock_unlocked.png"];
+            _instruction.text = @"Indicates no key entered";
+            
             
         }
             break;
         case 3:{
-            _message.image = [UIImage imageNamed:@"lockedMSG.png"];
-            _button.image = [UIImage imageNamed:@"locked.png"];
+            _button.image = [UIImage imageNamed:@"key_tut.png"];
+            _instruction.text = @"Press this button to enter or change the key";
+            
             
         }
             break;
         case 4:{
-            _message.image = [UIImage imageNamed:@"unlockedMSG.png"];
-            _button.image = [UIImage imageNamed:@"unlocked.png"];
+            _button.image = [UIImage imageNamed:@"enterkey.png"];
+            _instruction.text = @"";
+            
             
         }
             break;
         case 5:{
-            _message.image = [UIImage imageNamed:@"keyMSG.png"];
-            _button.image = [UIImage imageNamed:@"key.png"];
+            _button.image = [UIImage imageNamed:@"corner_lock_locked.png"];
+            _instruction.text = @"Indicates key entered";
+            
             
         }
             break;
         case 6:{
-            _sliderStatus.text = @"Slide down to hide";
-            _message.image = [UIImage imageNamed:@"sameKeyMSG.png"];
-            _button.image = [UIImage imageNamed:@"key.png"];
-            sliderTapCounter = 0;
+            _button.image = [UIImage imageNamed:@"clear1.png"];
+            _instruction.text = @"Clears the typed message";
+            
+            
         }
             break;
+        case 7:{
+            _button.image = [UIImage imageNamed:@"copy1.png"];
+            _instruction.text = @"Encrypts and copies the encrypted text to clipboard";
+            
+            
+        }
+            break;
+        case 8:{
+            _button.image = [UIImage imageNamed:@"send1.png"];
+            _instruction.text = @"Gives choice to send encrypted text as SMS or Email";
+            
+            
+        }
+            break;
+        case 9:{
+            _button.image = [UIImage imageNamed:@"decrypt_main.png"];
+            _instruction.text = @"";
+            
+            
+        }
+            break;
+        case 10:{
+            _button.image = [UIImage imageNamed:@"decrypt1.png"];
+            _instruction.text = @"Decrypts the encrypted message";
+            
+            
+        }
+            break;
+        case 11:{
+            _button.image = [UIImage imageNamed:@"red1.png"];
+            _instruction.text = @"If the decryption key doesn't match that of the sender";
+            
+            
+        }
+            break;
+        case 12:{
+            _button.image = [UIImage imageNamed:@"green1.png"];
+            _instruction.text = @"If the decryption key matches that of the sender";
+            
+            
+        }
+            break;
+        case 13:{
+            _button.image = [UIImage imageNamed:@"message_main.png"];
+            _instruction.text = @"Received encrypted message";
+            _instruction.backgroundColor = [UIColor darkGrayColor];
+            
+            CGRect labelFrame = _instruction.frame;
+            labelFrame.origin.y += 75.0f;
+            _instruction.frame = labelFrame;
+        }
+            break;
+        case 14:{
+            _button.image = [UIImage imageNamed:@"message.png"];
+            _instruction.text = @"Received encrypted message";
+            _instruction.backgroundColor = nil;
+            
+            
+            
+        }
+            break;
+        case 15:{
+            _button.image = [UIImage imageNamed:@"message_copy.png"];
+            _instruction.text = @"Copy Entire message";
+            
+            
+        }
+            break;
+        case 16:{
+            NSString *arrow = [[NSString alloc] initWithUTF8String:"\xE2\x87\xA3"];
+            _sliderStatus.text = [NSString stringWithFormat:@"%@ Slide down to hide %@",arrow,arrow];
+            _button.image = [UIImage imageNamed:@"tap_link.png"];
+            _instruction.text = @"Tap the CryptoType link to open the app and go to the decrypt screen";
+            
+            sliderTapCounter = 0;
+        }
     }
 }
 
@@ -463,8 +553,8 @@
         _key.hidden = NO;
         _swipeLabel.hidden = NO;
         
-        _Lock.alpha = 1;
-        _key.alpha = 1;
+        _Lock.alpha = .7;
+        _key.alpha = .7;
         _swipeLabel.alpha = .8;
         
     }];
@@ -538,7 +628,7 @@
         if (decryptionPassword.length != 0) {
             
             if (![decryptionPassword isEqualToString: senderPassword]) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!!" message:@"Your decryption key doesn't match the sender's encryption key"
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your decryption key doesn't match the sender's encryption key"
                                                                delegate:self
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil, nil];
@@ -649,7 +739,7 @@
         
         if (textView.text.length >= 5) {
             
-            if (textView.text.length > 20 && [[textView.text substringToIndex:20] isEqualToString:@"Encrypted-Message://"]){
+            if (textView.text.length > 13 && [[textView.text substringToIndex:13] isEqualToString:@"CryptoType://"]){
                 beforeText = [self trimText:_beforeTextView.text];
                 _beforeTextView.text = beforeText;
             } else {
@@ -660,7 +750,7 @@
                 if (decryptionPassword.length != 0) {
                     
                     if (![decryptionPassword isEqualToString: senderPassword]) {
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!!" message:@"Your decryption key doesn't match the sender's encryption key"
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your decryption key doesn't match the sender's encryption key"
                                                                        delegate:self
                                                               cancelButtonTitle:@"OK"
                                                               otherButtonTitles:nil, nil];
@@ -680,7 +770,7 @@
                 }
             }
         }else {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!!" message:@"Incomplete Text"
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Incomplete Text"
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil, nil];
@@ -728,7 +818,7 @@
             
             [noTextAlertView show]; // display error mesage
             
-        }else if (![_beforeTextView.text isEqualToString:@"\n\n\n\nPaste The Ecrypted Message Here"] && _beforeTextView.text != 0){
+        }else if (![_beforeTextView.text isEqualToString:@"\n\n\n\nPaste The Ecrypted Message Here"] && _beforeTextView.text.length != 0){
             if (keysMatched) {
                 [self decryptProcess:_beforeTextView];
                 
@@ -740,9 +830,9 @@
                 _beforeTextView.selectable = YES;
                 _beforeTextView.dataDetectorTypes = UIDataDetectorTypeAll;
                 
-                [_decryptButton setBackgroundImage:[UIImage imageNamed:@"copy.png"] forState:UIControlStateNormal];
+                [_decryptButton setBackgroundImage:[UIImage imageNamed:@"button_copy.png"] forState:UIControlStateNormal];
             } else {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!!" message:@"Your decryption key doesn't match the sender's encryption key"
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Your decryption key doesn't match the sender's encryption key"
                                                                delegate:self
                                                       cancelButtonTitle:@"OK"
                                                       otherButtonTitles:nil, nil];
@@ -774,7 +864,7 @@
     _beforeTextView.selectable = YES;
     _beforeTextView.dataDetectorTypes = UIDataDetectorTypeNone;
     
-    [_decryptButton setBackgroundImage:[UIImage imageNamed:@"decrypt.png"] forState:UIControlStateNormal];
+    [_decryptButton setBackgroundImage:[UIImage imageNamed:@"button_decrypt.png"] forState:UIControlStateNormal];
 }
 
 // Copies the decrypted message from the TextView
@@ -809,23 +899,23 @@
     if (passwordString.length > 5 || passwordString.length < 5) {
         
         
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"key must be 5 characters" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"key must be 5 characters" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         
         [message show];
         
         _senderKeyTextField.secureTextEntry = NO;
-        _senderKeyTextField.text = @"ex. pizza";
+        _senderKeyTextField.text = @"ex. admin";
         
         _keyLabel.text = @"Enter Key";
         passwordString = @"";
         
-        //[_Lock setBackgroundImage:[UIImage imageNamed:@"unlocked.png"] forState:UIControlStateNormal];
+        [_Lock setBackgroundImage:[UIImage imageNamed:@"unlocked.png"] forState:UIControlStateNormal];
         [_key setBackgroundImage:[UIImage imageNamed:@"key.png"]forState:UIControlStateNormal];
         NSLog(@"No key entered");
         
     } else {
         
-        //[_Lock setBackgroundImage:[UIImage imageNamed:@"locked.png"] forState:UIControlStateNormal];
+        [_Lock setBackgroundImage:[UIImage imageNamed:@"locked.png"] forState:UIControlStateNormal];
         
         _keyLabel.text = @"Key Saved";
         
@@ -959,7 +1049,7 @@
     NSString *temp;
     int counter = 0;
     
-    for (int i = 20; i<[pastedText length]; i++){
+    for (int i = 13; i<[pastedText length]; i++){
         
         char c = [text characterAtIndex:i];
         
@@ -979,7 +1069,7 @@
         
         char c = [text characterAtIndex:i];
         
-        if (c != '>') {
+        if (c != '[') {
             counter++;
         } else
             break;

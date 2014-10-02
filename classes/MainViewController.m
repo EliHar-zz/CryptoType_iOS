@@ -39,9 +39,9 @@
 @property (nonatomic, strong) IBOutlet UIButton *infoButton;// Image of the button explained
 @property (nonatomic, strong) IBOutlet UIView *slideView; // outer view that slides up and down
 @property (nonatomic, strong) IBOutlet UIView *slideViewInner; // inner view that contains the elements that chnage
-@property (nonatomic, strong) IBOutlet UIImageView *message; // Message for the user to read
-@property (nonatomic, strong) IBOutlet UIImageView *button;// Image of the button explained
+@property (nonatomic, strong) IBOutlet UIImageView *button;// Image explained
 @property (nonatomic, strong) IBOutlet UILabel *sliderStatus;// Image of the button explained
+@property (strong, nonatomic) IBOutlet UILabel *instruction;// instruction text
 
 @end
 
@@ -104,17 +104,19 @@ BOOL isInKeyViewController = NO;
             [_mainTextView setFont:[UIFont systemFontOfSize:25]];
         _mainTextView.textAlignment = NSTextAlignmentCenter;
         _mainTextView.textColor = [UIColor grayColor];
-        
     }
+    
+    if (password.length == 0)
+        [_Lock setBackgroundImage:[UIImage imageNamed:@"unlocked.png"] forState:UIControlStateNormal];
+    else
+        [_Lock setBackgroundImage:[UIImage imageNamed:@"locked.png"] forState:UIControlStateNormal];
+    
 }
 
 - (void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    if (password.length == 0 && !isInKeyViewController) {
-        isInKeyViewController = YES;
-        [self performSegueWithIdentifier:@"toKey" sender:self];
-    }
+    
 }
 
 - (void)viewDidLoad {
@@ -131,10 +133,16 @@ BOOL isInKeyViewController = NO;
     _doneEditingButton.alpha = 0;
     _doneEditingButton.hidden = YES;
     
+    if ([[UIScreen mainScreen] bounds].size.height != 568.0f) {
+        CGRect newframe = _doneEditingButton.frame;
+        newframe.origin.y -= 88.0f;
+        _doneEditingButton.frame = newframe;
+    }
+    
     height = self.view.frame.size.height;
     width = self.view.frame.size.width;
     
-    NSUserDefaults *savedData = [NSUserDefaults new];
+    NSUserDefaults *savedData = [NSUserDefaults standardUserDefaults];
     
     password = [savedData stringForKey:@"password"];
     
@@ -157,7 +165,7 @@ BOOL isInKeyViewController = NO;
         
     } else {
         _keyTextField.secureTextEntry = NO;
-        _keyTextField.text = @"ex. pizza";
+        _keyTextField.text = @"ex. admin";
         _keyLabel.text = @"Enter Key";
         [_Lock setBackgroundImage:[UIImage imageNamed:@"unlocked.png"] forState:UIControlStateNormal];
         
@@ -171,7 +179,7 @@ BOOL isInKeyViewController = NO;
     _doneEditingButton.layer.cornerRadius = 10;
     
     self.statusLabel.alpha = 0.0;
-        
+    
     UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc]
                                                     initWithTarget:self
                                                     action:@selector(handleTap:)];
@@ -228,7 +236,7 @@ BOOL isInKeyViewController = NO;
     
 }
 
--(void) viewWillDisappear:(BOOL)animated {
+- (void) viewWillDisappear:(BOOL)animated {
     
     // remove keyTextfield character limiting observer
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"UITextFieldTextDidChangeNotification" object:_keyTextField];
@@ -254,8 +262,8 @@ BOOL isInKeyViewController = NO;
     }];
     sliderTapCounter = 1;
     _sliderStatus.text = @"Tap for Next >>>";
-    _message.image = [UIImage imageNamed:@"copyMSG.png"];
-    _button.image = [UIImage imageNamed:@"copy.png"];
+    _button.image = [UIImage imageNamed:@"main.png"];
+    _instruction.text = @"";
     [self sliderUp];
 }
 
@@ -272,7 +280,7 @@ BOOL isInKeyViewController = NO;
         newSlideViewFrame.origin.y = (77.0/568)*height;
         _slideView.frame = newSlideViewFrame;
         
-        _slideView.alpha = .90;
+        _slideView.alpha = .99;
         
     }completion:^(BOOL finished) {
         slideView_center_Y = _slideView.center.y; // original center
@@ -314,42 +322,133 @@ BOOL isInKeyViewController = NO;
     
     switch (sliderTapCounter) {
         case 1:{
+            
+            CGRect labelFrame = _instruction.frame;
+            labelFrame.origin.y -= 75.0f;
+            _instruction.frame = labelFrame;
+            
             _sliderStatus.text = @"Tap for Next >>>";
-            _message.image = [UIImage imageNamed:@"copyMSG.png"];
-            _button.image = [UIImage imageNamed:@"copy.png"];
+            _button.image = [UIImage imageNamed:@"main.png"];
+            _instruction.text = @"";
+
         }
             break;
         case 2:{
-            _message.image = [UIImage imageNamed:@"sendMSG.png"];
-            _button.image = [UIImage imageNamed:@"send.png"];
+            _button.image = [UIImage imageNamed:@"corner_lock_unlocked.png"];
+            _instruction.text = @"Indicates no key entered";
+
             
         }
             break;
         case 3:{
-            _message.image = [UIImage imageNamed:@"lockedMSG.png"];
-            _button.image = [UIImage imageNamed:@"locked.png"];
+            _button.image = [UIImage imageNamed:@"key_tut.png"];
+            _instruction.text = @"Press this button to enter or change the key";
+
             
         }
             break;
         case 4:{
-            _message.image = [UIImage imageNamed:@"unlockedMSG.png"];
-            _button.image = [UIImage imageNamed:@"unlocked.png"];
+            _button.image = [UIImage imageNamed:@"enterkey.png"];
+            _instruction.text = @"";
+
             
         }
             break;
         case 5:{
-            _message.image = [UIImage imageNamed:@"keyMSG.png"];
-            _button.image = [UIImage imageNamed:@"key.png"];
+            _button.image = [UIImage imageNamed:@"corner_lock_locked.png"];
+            _instruction.text = @"Indicates key entered";
+
             
         }
             break;
         case 6:{
-            _sliderStatus.text = @"Slide down to hide";
-            _message.image = [UIImage imageNamed:@"sameKeyMSG.png"];
-            _button.image = [UIImage imageNamed:@"key.png"];
+            _button.image = [UIImage imageNamed:@"clear1.png"];
+            _instruction.text = @"Clears the typed message";
+
+            
+        }
+            break;
+        case 7:{
+            _button.image = [UIImage imageNamed:@"copy1.png"];
+            _instruction.text = @"Encrypts and copies the encrypted text to clipboard";
+
+            
+        }
+            break;
+        case 8:{
+            _button.image = [UIImage imageNamed:@"send1.png"];
+            _instruction.text = @"Gives choice to send encrypted text as SMS or Email";
+
+            
+        }
+            break;
+        case 9:{
+            _button.image = [UIImage imageNamed:@"decrypt_main.png"];
+            _instruction.text = @"";
+
+            
+        }
+            break;
+        case 10:{
+            _button.image = [UIImage imageNamed:@"decrypt1.png"];
+            _instruction.text = @"Decrypts the encrypted message";
+
+            
+        }
+            break;
+        case 11:{
+            _button.image = [UIImage imageNamed:@"red1.png"];
+            _instruction.text = @"If the decryption key doesn't match that of the sender";
+
+            
+        }
+           break;
+        case 12:{
+            _button.image = [UIImage imageNamed:@"green1.png"];
+            _instruction.text = @"If the decryption key matches that of the sender";
+            
+            
+        }
+            break;
+        case 13:{
+            _button.image = [UIImage imageNamed:@"message_main.png"];
+            _instruction.text = @"Received encrypted message";
+            _instruction.backgroundColor = [UIColor darkGrayColor];
+            
+            CGRect labelFrame = _instruction.frame;
+            labelFrame.origin.y += 75.0f;
+            _instruction.frame = labelFrame;
+            
+            
+        }
+            break;
+        case 14:{
+            _button.image = [UIImage imageNamed:@"message.png"];
+            _instruction.text = @"Received encrypted message";
+            _instruction.backgroundColor = nil;
+
+            
+            
+        }
+            break;
+        case 15:{
+            _button.image = [UIImage imageNamed:@"message_copy.png"];
+            _instruction.text = @"Copy Entire message";
+            
+            
+        }
+            break;
+        case 16:{
+            
+            NSString *arrow = [[NSString alloc] initWithUTF8String:"\xE2\x87\xA3"];
+            _sliderStatus.text = [NSString stringWithFormat:@"%@ Slide down to hide %@",arrow,arrow];
+            [_sliderStatus.text sizeWithFont:[UIFont fontWithName:@"Helvetica" size:20.0f]];
+            _button.image = [UIImage imageNamed:@"tap_link.png"];
+            _instruction.text = @"Tap the CryptoType link to open the app and go to the decrypt screen";
+
             sliderTapCounter = 0;
             
-            NSUserDefaults *savedData = [NSUserDefaults new];
+            NSUserDefaults *savedData = [NSUserDefaults standardUserDefaults];
             if (!openedBefore) {
                 openedBefore = YES;
                 [savedData setBool:openedBefore forKey:@"openedBefore"];
@@ -501,8 +600,8 @@ BOOL isInKeyViewController = NO;
         _key.hidden = NO;
         _swipeLabel.hidden = NO;
         
-        _Lock.alpha = 1;
-        _key.alpha = 1;
+        _Lock.alpha = .7;
+        _key.alpha = .7;
         _swipeLabel.alpha = .8;
         
     }];
@@ -711,7 +810,7 @@ BOOL isInKeyViewController = NO;
                         [self encryptPassword:password]; // encrypts the password
                         
                         // Message content
-                        controller.body = [NSString stringWithFormat:@"Encrypted-Message://%ld \n\n>> %@%@ << \n\n Sent with CryptoType\n\n http://appstore.com/cryptotype", (long)_mainTextView.text.length, encryptedPassword, afterText];
+                        controller.body = [NSString stringWithFormat:@"CryptoType://%ld \n\n[] %@%@ [] \n\n Sent with CryptoType\n\n http://appstore.com/cryptotype", (long)_mainTextView.text.length, encryptedPassword, afterText];
                         
                         controller.messageComposeDelegate = self;
                         
@@ -719,7 +818,7 @@ BOOL isInKeyViewController = NO;
                     }else {
                         NSLog(@"cannot send SMS");
                         
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"The device can't send message"
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"The device can't send messages"
                                                                        delegate:self
                                                               cancelButtonTitle:@"OK"
                                                               otherButtonTitles:nil, nil];
@@ -742,7 +841,7 @@ BOOL isInKeyViewController = NO;
                         [controller setSubject:@"Encrypted Message - CryptoType iOS App"];
                         
                         // Email content
-                        [controller setMessageBody:[NSString stringWithFormat:@"Encrypted-Message://%ld \n\n>> %@%@ << \n\n Sent with CryptoType\n\n http://appstore.com/cryptotype", (long)_mainTextView.text.length, encryptedPassword, afterText] isHTML:NO];
+                        [controller setMessageBody:[NSString stringWithFormat:@"CryptoType://%ld \n\n[] %@%@ [] \n\n Sent with CryptoType\n\n http://appstore.com/cryptotype", (long)_mainTextView.text.length, encryptedPassword, afterText] isHTML:NO];
                         
                         controller.mailComposeDelegate = self;
                         
@@ -750,7 +849,7 @@ BOOL isInKeyViewController = NO;
                     } else {
                         NSLog(@"cannot send mail");
                         
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"The device can't send mail"
+                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"The device can't send emails"
                                                                        delegate:self
                                                               cancelButtonTitle:@"OK"
                                                               otherButtonTitles:nil, nil];
@@ -774,7 +873,7 @@ BOOL isInKeyViewController = NO;
         case MFMailComposeResultFailed: {
             NSLog(@"error");
             
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"Unknown Error"
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Unknown Error"
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil, nil];
@@ -808,7 +907,7 @@ BOOL isInKeyViewController = NO;
             break;
         case MessageComposeResultFailed: {
             NSLog(@"error");
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"Unknown Error"
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"Unknown Error"
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:nil, nil];
@@ -918,19 +1017,19 @@ BOOL isInKeyViewController = NO;
 
 - (int) getPsswrdValue: (NSString*) passwordString {
     
-    NSUserDefaults *savedData = [NSUserDefaults new];
+    NSUserDefaults *savedData = [NSUserDefaults standardUserDefaults];
     
     int total = 0;
     
     if (passwordString.length > 5 || passwordString.length < 5) {
         
-        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"CryptoType" message:@"key must be 5 characters" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        UIAlertView *message = [[UIAlertView alloc] initWithTitle:@"Oops!" message:@"key must be 5 characters" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         
         [message show];
         
         
         _keyTextField.secureTextEntry = NO;
-        _keyTextField.text = @"ex. pizza";
+        _keyTextField.text = @"ex. admin";
         
         _keyLabel.text = @"Enter Key";
         passwordString = @"";

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>3E292299-B4E7-4633-AA1D-3E13477E2458</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Crypto</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>DC3708F77663A4F8AB3051EEA26BA9CD3BBC5950</key>
+		<string>https://github.com/EliHar/CryptoType_iOS.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Crypto.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>DC3708F77663A4F8AB3051EEA26BA9CD3BBC5950</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/EliHar/CryptoType_iOS.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>DC3708F77663A4F8AB3051EEA26BA9CD3BBC5950</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>DC3708F77663A4F8AB3051EEA26BA9CD3BBC5950</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CryptoType_iOS</string>
+		</dict>
+	</array>
+</dict>
+</plist>
