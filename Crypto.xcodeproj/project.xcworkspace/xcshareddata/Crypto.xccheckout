@@ -14,7 +14,7 @@
 		<string>https://github.com/EliHar/CryptoType_iOS.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Crypto.xcodeproj/project.xcworkspace</string>
+	<string>Crypto.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>DC3708F77663A4F8AB3051EEA26BA9CD3BBC5950</key>
